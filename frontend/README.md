@@ -1,103 +1,54 @@
-# AI-Powered Learning Platform Frontend
+# React + TypeScript + Vite
 
-This is the frontend application for the AI-powered learning platform. It's built with React, TypeScript, and Tailwind CSS.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Features
+Currently, two official plugins are available:
 
-- Modern, responsive UI with Tailwind CSS
-- Type-safe development with TypeScript
-- Form handling with React Hook Form
-- State management with Zustand
-- Data fetching with React Query
-- Client-side routing with React Router
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## Prerequisites
+## Expanding the ESLint configuration
 
-- Node.js 16.x or later
-- npm 7.x or later
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-## Getting Started
-
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-2. Start the development server:
-   ```bash
-   npm run dev
-   ```
-
-The application will be available at `http://localhost:5173`.
-
-## Available Scripts
-
-- `npm run dev` - Start the development server
-- `npm run build` - Build the application for production
-- `npm run preview` - Preview the production build locally
-- `npm run lint` - Run ESLint
-- `npm run type-check` - Run TypeScript type checking
-
-## Project Structure
-
-```
-src/
-  ├── components/     # Reusable UI components
-  ├── pages/         # Page components
-  ├── stores/        # Zustand stores
-  ├── types/         # TypeScript type definitions
-  ├── App.tsx        # Main application component
-  └── index.tsx      # Application entry point
+```js
+export default tseslint.config({
+  extends: [
+    // Remove ...tseslint.configs.recommended and replace with this
+    ...tseslint.configs.recommendedTypeChecked,
+    // Alternatively, use this for stricter rules
+    ...tseslint.configs.strictTypeChecked,
+    // Optionally, add this for stylistic rules
+    ...tseslint.configs.stylisticTypeChecked,
+  ],
+  languageOptions: {
+    // other options...
+    parserOptions: {
+      project: ['./tsconfig.node.json', './tsconfig.app.json'],
+      tsconfigRootDir: import.meta.dirname,
+    },
+  },
+})
 ```
 
-## Development
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-### Adding New Dependencies
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
 
-When adding new dependencies, make sure to:
-
-1. Install the package:
-   ```bash
-   npm install <package-name>
-   ```
-
-2. If the package includes TypeScript types, install them as well:
-   ```bash
-   npm install -D @types/<package-name>
-   ```
-
-### Code Style
-
-- Use TypeScript for type safety
-- Follow the existing code style and patterns
-- Use Tailwind CSS for styling
-- Write meaningful component and function names
-- Add comments for complex logic
-
-### Testing
-
-The project uses Vitest for testing. To run tests:
-
-```bash
-npm test
+export default tseslint.config({
+  plugins: {
+    // Add the react-x and react-dom plugins
+    'react-x': reactX,
+    'react-dom': reactDom,
+  },
+  rules: {
+    // other rules...
+    // Enable its recommended typescript rules
+    ...reactX.configs['recommended-typescript'].rules,
+    ...reactDom.configs.recommended.rules,
+  },
+})
 ```
-
-## Building for Production
-
-To build the application for production:
-
-```bash
-npm run build
-```
-
-The build output will be in the `dist` directory.
-
-## Contributing
-
-1. Create a new branch for your feature
-2. Make your changes
-3. Submit a pull request
-
-## License
-
-This project is licensed under the MIT License. 
