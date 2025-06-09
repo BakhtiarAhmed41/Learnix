@@ -1,50 +1,48 @@
-import { Routes, Route } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Layout from './components/Layout';
 import Home from './pages/Home';
+import Documents from './pages/Documents';
+import Tests from './pages/Tests';
 import Login from './pages/Login';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import DocumentUpload from './pages/DocumentUpload';
-import TestGeneration from './pages/TestGeneration';
-import TestTaking from './pages/TestTaking';
-import TestResults from './pages/TestResults';
-import PrivateRoute from './components/PrivateRoute';
+import TestCORS from './pages/TestCORS';
+
+// Create router with future flags
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Layout />,
+    children: [
+      {
+        index: true,
+        element: <Home />,
+      },
+      {
+        path: 'documents',
+        element: <Documents />,
+      },
+      {
+        path: 'tests',
+        element: <Tests />,
+      },
+      {
+        path: 'test-cors',
+        element: <TestCORS />,
+      },
+    ],
+  },
+  {
+    path: 'login',
+    element: <Login />,
+  },
+], {
+  future: {
+    v7_startTransition: true,
+    v7_relativeSplatPath: true,
+  },
+});
 
 function App() {
-    return (
-        <Routes>
-            <Route path="/" element={<Layout />}>
-                <Route index element={<Home />} />
-                <Route path="login" element={<Login />} />
-                <Route path="register" element={<Register />} />
-                <Route path="dashboard" element={
-                    <PrivateRoute>
-                        <Dashboard />
-                    </PrivateRoute>
-                } />
-                <Route path="upload" element={
-                    <PrivateRoute>
-                        <DocumentUpload />
-                    </PrivateRoute>
-                } />
-                <Route path="generate-test/:documentId" element={
-                    <PrivateRoute>
-                        <TestGeneration />
-                    </PrivateRoute>
-                } />
-                <Route path="test/:testId" element={
-                    <PrivateRoute>
-                        <TestTaking />
-                    </PrivateRoute>
-                } />
-                <Route path="results/:testId" element={
-                    <PrivateRoute>
-                        <TestResults />
-                    </PrivateRoute>
-                } />
-            </Route>
-        </Routes>
-    );
+  return <RouterProvider router={router} />;
 }
 
-export default App; 
+export default App;
