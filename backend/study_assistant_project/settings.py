@@ -1,6 +1,7 @@
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+from corsheaders.defaults import default_headers
 
 load_dotenv()
 
@@ -91,33 +92,14 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS settings
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
-
+CORS_ALLOW_ALL_ORIGINS = True  # For development only!
 CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOW_METHODS = [
-    'DELETE',
-    'GET',
-    'OPTIONS',
-    'PATCH',
-    'POST',
-    'PUT',
-]
-
-CORS_ALLOW_HEADERS = [
-    'accept',
-    'accept-encoding',
-    'authorization',
-    'content-type',
-    'dnt',
-    'origin',
-    'user-agent',
-    'x-csrftoken',
-    'x-requested-with',
-]
+CORS_ALLOW_HEADERS = list(default_headers)
 
 # OpenAI settings
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY') 
+# OPENAI_API_KEY = os.getenv('OPENAI_API_KEY') 
+# OPENAI_API_KEY = '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'
+
+# Gemini settings
+GEMINI_API_KEY = "AIzaSyAKIQg7eq9T_lIGTQxecOpcDMnDe7VDhxo" # Directly assign your Gemini API key here, or use os.getenv('GEMINI_API_KEY')
