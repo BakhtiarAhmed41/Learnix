@@ -1,7 +1,11 @@
 import { ReactNode } from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
-const Layout = () => {
+interface LayoutProps {
+    children: ReactNode;
+}
+
+const Layout = ({ children }: LayoutProps) => {
     return (
         <div className="min-h-screen flex flex-col">
             <nav className="bg-white shadow-md">
@@ -46,7 +50,7 @@ const Layout = () => {
 
             <main className="flex-grow">
                 <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                    <Outlet />
+                    {children}
                 </div>
             </main>
 
