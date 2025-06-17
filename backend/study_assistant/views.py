@@ -190,6 +190,24 @@ class TestAttemptViewSet(viewsets.ModelViewSet):
     queryset = TestAttempt.objects.all()
     serializer_class = TestAttemptSerializer
 
+    def create(self, request, *args, **kwargs):
+        test_id = request.data.get('test')
+        if not test_id:
+            return Response(
+                {'error': 'Test ID is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            test = Test.objects.get(id=test_id)
+            attempt = TestAttempt.objects.create(test=test)
+            return Response(self.get_serializer(attempt).data, status=status.HTTP_201_CREATED)
+        except Test.DoesNotExist:
+            return Response(
+                {'error': 'Test not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
     @action(detail=True, methods=['post'])
     def submit(self, request, pk=None):
         attempt = self.get_object()

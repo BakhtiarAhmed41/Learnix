@@ -19,9 +19,7 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    // Ensure headers are properly set for CORS
-    config.headers['Access-Control-Allow-Origin'] = 'http://localhost:5173';
-    config.headers['Access-Control-Allow-Credentials'] = 'true';
+    // Removed manual CORS headers
     return config;
   },
   (error) => {
@@ -164,9 +162,29 @@ export const testAPI = {
     }
   },
 
-  submit: async (testId: number, answers: { questionId: number; answer: string }[]) => {
+  getAttempt: async (attemptId: number) => {
     try {
-      const response = await api.post(`/tests/${testId}/submit/`, { answers });
+      const response = await api.get(`/test-attempts/${attemptId}/`);
+      return response.data;
+    } catch (error) {
+      console.error('Get test attempt error:', error);
+      throw error;
+    }
+  },
+
+  createAttempt: async (testId: number) => {
+    try {
+      const response = await api.post('/test-attempts/', { test: testId });
+      return response.data;
+    } catch (error) {
+      console.error('Create test attempt error:', error);
+      throw error;
+    }
+  },
+
+  submit: async (attemptId: number, answers: { questionId: number; answer: string }[]) => {
+    try {
+      const response = await api.post(`/test-attempts/${attemptId}/submit/`, { answers });
       return response.data;
     } catch (error) {
       console.error('Submit test error:', error);

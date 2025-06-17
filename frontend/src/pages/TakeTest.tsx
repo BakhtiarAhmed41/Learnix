@@ -1,53 +1,100 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, useParams } from 'react-router-dom';
 import { HiClock, HiCheck, HiX } from 'react-icons/hi';
+import { testAPI } from '../services/api';
 
 interface Question {
     id: number;
-    text: string;
-    type: 'multiple-choice' | 'short-answer';
-    options?: string[];
-    answer?: string;
+    question_text: string;
+    question_type: 'multiple_choice' | 'short_answer';
+    options: string[];
+    correct_answer: string;
+    order: number;
+}
+
+interface Test {
+    id: number;
+    title: string;
+    questions: Question[];
 }
 
 const TakeTest = () => {
-    const { testId } = useParams();
+    const { testId } = useParams<{ testId: string }>();
     const navigate = useNavigate();
     const [timeLeft, setTimeLeft] = useState(1800); // 30 minutes in seconds
-    const [currentQuestion, setCurrentQuestion] = useState(0);
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [answers, setAnswers] = useState<Record<number, string>>({});
+    const [test, setTest] = useState<Test | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [attemptId, setAttemptId] = useState<number | null>(null);
 
-    // Mock questions - replace with actual API call
-    const questions: Question[] = [
-        {
-            id: 1,
-            text: 'What is the capital of France?',
-            type: 'multiple-choice',
-            options: ['London', 'Berlin', 'Paris', 'Madrid'],
-        },
-        {
-            id: 2,
-            text: 'Explain the concept of photosynthesis.',
-            type: 'short-answer',
-        },
-        // Add more questions here
-    ];
+    // Define handleSubmit before the useEffect that uses it
+    const handleSubmit = useCallback(async () => {
+        if (!attemptId) {
+            setError('No test attempt found. Please refresh the page and try again.');
+            return;
+        }
+
+        try {
+            // Format answers for API
+            const formattedAnswers = Object.entries(answers).map(([questionId, answer]) => ({
+                questionId: parseInt(questionId),
+                answer: answer
+            }));
+
+            // Submit answers to API
+            const response = await testAPI.submit(attemptId, formattedAnswers);
+
+            // Navigate to results page with the attemptId
+            navigate(`/results/${response.id}`);
+        } catch (error) {
+            console.error('Error submitting test:', error);
+            setError('Failed to submit test. Please try again.');
+        }
+    }, [navigate, testId, answers, attemptId]);
 
     useEffect(() => {
-        const timer = setInterval(() => {
-            setTimeLeft((prev) => {
-                if (prev <= 0) {
-                    clearInterval(timer);
-                    handleSubmit();
-                    return 0;
-                }
-                return prev - 1;
-            });
-        }, 1000);
+        const fetchTest = async () => {
+            if (!testId) {
+                setError("Test ID not found in URL.");
+                setLoading(false);
+                return;
+            }
+            try {
+                const fetchedTest = await testAPI.get(parseInt(testId));
+                setTest(fetchedTest);
 
-        return () => clearInterval(timer);
-    }, []);
+                // Create a new test attempt
+                const attempt = await testAPI.createAttempt(parseInt(testId));
+                setAttemptId(attempt.id);
+
+                setLoading(false);
+            } catch (err: any) {
+                console.error('Failed to fetch test:', err);
+                setError(err.response?.data?.error || 'Failed to load test. Please try again.');
+                setLoading(false);
+            }
+        };
+        fetchTest();
+    }, [testId]);
+
+    useEffect(() => {
+        if (test && test.questions.length > 0) {
+            const timer = setInterval(() => {
+                setTimeLeft((prev) => {
+                    if (prev <= 0) {
+                        clearInterval(timer);
+                        handleSubmit();
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+            return () => clearInterval(timer);
+        }
+    }, [test, handleSubmit]);
 
     const formatTime = (seconds: number) => {
         const minutes = Math.floor(seconds / 60);
@@ -56,24 +103,34 @@ const TakeTest = () => {
     };
 
     const handleAnswer = (answer: string) => {
-        setAnswers((prev) => ({
-            ...prev,
-            [questions[currentQuestion].id]: answer,
-        }));
+        if (test && test.questions.length > 0) {
+            setAnswers((prev) => ({
+                ...prev,
+                [test.questions[currentQuestionIndex].id]: answer,
+            }));
+        }
     };
 
-    const handleSubmit = () => {
-        // TODO: Implement answer submission logic
-        navigate(`/results/${testId}`);
-    };
+    if (loading) {
+        return <div className="text-center py-8">Loading test...</div>;
+    }
 
-    const progress = (Object.keys(answers).length / questions.length) * 100;
+    if (error) {
+        return <div className="text-center py-8 text-red-500">Error: {error}</div>;
+    }
+
+    if (!test || test.questions.length === 0) {
+        return <div className="text-center py-8">No questions found for this test.</div>;
+    }
+
+    const currentQuestion = test.questions[currentQuestionIndex];
+    const progress = (Object.keys(answers).length / test.questions.length) * 100;
 
     return (
         <div className="max-w-4xl mx-auto space-y-8">
             {/* Header */}
             <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold text-gray-900">Test in Progress</h1>
+                <h1 className="text-2xl font-bold text-gray-900">Take Test: {test.title}</h1>
                 <div className="flex items-center space-x-2 text-gray-600">
                     <HiClock className="h-5 w-5" />
                     <span className="font-medium">{formatTime(timeLeft)}</span>
@@ -92,7 +149,7 @@ const TakeTest = () => {
 
             {/* Question */}
             <motion.div
-                key={currentQuestion}
+                key={currentQuestion.id}
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
@@ -100,51 +157,44 @@ const TakeTest = () => {
             >
                 <div className="space-y-2">
                     <span className="text-sm text-gray-500">
-                        Question {currentQuestion + 1} of {questions.length}
+                        Question {currentQuestionIndex + 1} of {test.questions.length}
                     </span>
                     <h2 className="text-xl font-semibold text-gray-900">
-                        {questions[currentQuestion].text}
+                        {currentQuestion.question_text}
                     </h2>
                 </div>
 
-                {questions[currentQuestion].type === 'multiple-choice' ? (
+                {currentQuestion.question_type === 'multiple_choice' && currentQuestion.options && (
                     <div className="space-y-3">
-                        {questions[currentQuestion].options?.map((option) => (
+                        {currentQuestion.options.map((option) => (
                             <button
                                 key={option}
                                 onClick={() => handleAnswer(option)}
-                                className={`w-full p-4 text-left rounded-lg border-2 transition-all duration-200 ${answers[questions[currentQuestion].id] === option
-                                        ? 'border-primary-600 bg-primary-50'
-                                        : 'border-gray-200 hover:border-primary-600'
+                                className={`w-full p-4 text-left rounded-lg border-2 transition-all duration-200 ${answers[currentQuestion.id] === option
+                                    ? 'border-primary-600 bg-primary-50'
+                                    : 'border-gray-200 hover:border-primary-600'
                                     }`}
                             >
                                 {option}
                             </button>
                         ))}
                     </div>
-                ) : (
-                    <textarea
-                        value={answers[questions[currentQuestion].id] || ''}
-                        onChange={(e) => handleAnswer(e.target.value)}
-                        className="input min-h-[150px]"
-                        placeholder="Type your answer here..."
-                    />
                 )}
             </motion.div>
 
             {/* Navigation */}
             <div className="flex justify-between">
                 <button
-                    onClick={() => setCurrentQuestion((prev) => Math.max(0, prev - 1))}
-                    disabled={currentQuestion === 0}
+                    onClick={() => setCurrentQuestionIndex((prev) => Math.max(0, prev - 1))}
+                    disabled={currentQuestionIndex === 0}
                     className="btn btn-secondary"
                 >
                     Previous
                 </button>
                 <div className="space-x-4">
-                    {currentQuestion < questions.length - 1 ? (
+                    {currentQuestionIndex < test.questions.length - 1 ? (
                         <button
-                            onClick={() => setCurrentQuestion((prev) => prev + 1)}
+                            onClick={() => setCurrentQuestionIndex((prev) => prev + 1)}
                             className="btn btn-primary"
                         >
                             Next

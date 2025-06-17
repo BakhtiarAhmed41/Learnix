@@ -3,7 +3,7 @@ import { documentAPI } from '../services/api';
 
 interface TestGenerationProps {
     documentId: number;
-    onTestGenerated: () => void;
+    onTestGenerated: (testId: number) => void;
 }
 
 const TestGeneration: React.FC<TestGenerationProps> = ({ documentId, onTestGenerated }) => {
@@ -15,8 +15,8 @@ const TestGeneration: React.FC<TestGenerationProps> = ({ documentId, onTestGener
         setError(null);
 
         try {
-            await documentAPI.generateTest(documentId);
-            onTestGenerated();
+            const test = await documentAPI.generateTest(documentId);
+            onTestGenerated(test.id);
         } catch (err) {
             setError('Failed to generate test. Please try again.');
         } finally {

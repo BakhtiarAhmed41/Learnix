@@ -1,10 +1,15 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { HiDocumentText, HiClock, HiQuestionMarkCircle } from 'react-icons/hi';
+import { documentAPI } from '../services/api';
 
 const GenerateTest = () => {
     const navigate = useNavigate();
+    const { documentId } = useParams<{ documentId: string }>();
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
     const [testConfig, setTestConfig] = useState({
         examType: 'multiple-choice',
         questionCount: 10,
@@ -18,10 +23,26 @@ const GenerateTest = () => {
         { id: 'mixed', name: 'Mixed Format', icon: HiClock },
     ];
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // TODO: Implement test generation logic
-        navigate('/test/1'); // Temporary navigation
+        setLoading(true);
+        setError(null);
+
+        if (!documentId) {
+            setError("Document ID not found in URL.");
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const test = await documentAPI.generateTest(parseInt(documentId));
+            navigate(`/take-test/${test.id}`);
+        } catch (err: any) {
+            console.error('Failed to generate test:', err);
+            setError(err.response?.data?.error || 'Failed to generate test. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -31,6 +52,9 @@ const GenerateTest = () => {
                 <p className="text-gray-600">
                     Configure your test settings to generate a personalized assessment
                 </p>
+                {error && (
+                    <p className="text-red-500 text-sm mt-2">{error}</p>
+                )}
             </div>
 
             <motion.form
@@ -117,8 +141,8 @@ const GenerateTest = () => {
                 </div>
 
                 <div className="flex justify-end">
-                    <button type="submit" className="btn btn-primary">
-                        Generate Test
+                    <button type="submit" className="btn btn-primary" disabled={loading}>
+                        {loading ? 'Generating...' : 'Generate Test'}
                     </button>
                 </div>
             </motion.form>

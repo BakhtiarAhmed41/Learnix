@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import DocumentUpload from '../components/DocumentUpload';
+import TestGeneration from '../components/TestGeneration';
 import { documentAPI } from '../services/api';
+import { useNavigate } from 'react-router-dom';
 
 interface Document {
     id: number;
@@ -10,143 +12,108 @@ interface Document {
     status: string;
 }
 
+interface Question {
+    id: number;
+    question_text: string;
+    question_type: string;
+    options: string[];
+    correct_answer: string;
+    order: number;
+}
+
+interface Test {
+    id: number;
+    title: string;
+    questions: Question[];
+}
+
 const Documents = () => {
-    const navigate = useNavigate();
-    const [documents, setDocuments] = useState<Document[]>([]);
-    const [isUploading, setIsUploading] = useState(false);
+    const [uploadedDocument, setUploadedDocument] = useState<Document | null>(null);
+    const [test, setTest] = useState<Test | null>(null);
+    const [answers, setAnswers] = useState<Record<number, string>>({});
+    const [score, setScore] = useState<number | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            navigate('/login');
-            return;
-        }
+    // Step 1: Upload
+    if (!uploadedDocument) {
+        return (
+            <DocumentUpload
+                onUploadSuccess={async () => {
+                    try {
+                        // Get the latest uploaded document
+                        const docs = await documentAPI.list();
+                        const latest = docs[docs.length - 1];
+                        setUploadedDocument(latest);
+                    } catch (e) {
+                        setError('Failed to fetch uploaded document.');
+                    }
+                }}
+            />
+        );
+    }
 
-        const fetchDocuments = async () => {
-            try {
-                const data = await documentAPI.list();
-                setDocuments(data);
-            } catch (err: any) {
-                if (err.response?.status === 401) {
-                    navigate('/login');
-                } else {
-                    setError('Failed to fetch documents. Please try again.');
-                    console.error('Fetch error:', err);
-                }
-            }
-        };
+    // Step 2: Generate Test
+    if (!test) {
+        return (
+            <TestGeneration
+                documentId={uploadedDocument.id}
+                onTestGenerated={(testId: number) => {
+                    navigate(`/take-test/${testId}`);
+                }}
+            />
+        );
+    }
 
-        fetchDocuments();
-    }, [navigate]);
+    // Step 3: Take Test
+    const handleAnswerChange = (questionId: number, answer: string) => {
+        setAnswers((prev) => ({ ...prev, [questionId]: answer }));
+    };
 
-    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
-
-        setIsUploading(true);
-        setError(null);
-
-        try {
-            const response = await documentAPI.upload(file, file.name);
-            setDocuments([...documents, response]);
-        } catch (err: any) {
-            if (err.response?.status === 401) {
-                navigate('/login');
-            } else {
-                setError('Failed to upload document. Please try again.');
-                console.error('Upload error:', err);
-            }
-        } finally {
-            setIsUploading(false);
-        }
+    const handleSubmitTest = async () => {
+        // Here you would call your API to submit answers and get score
+        // For now, just calculate score locally if possible
+        let correct = 0;
+        test?.questions.forEach(q => {
+            if (answers[q.id] === q.correct_answer) correct++;
+        });
+        setScore(Math.round((correct / (test?.questions.length || 1)) * 100));
     };
 
     return (
-        <div className="space-y-6">
-            <div className="sm:flex sm:items-center sm:justify-between">
-                <h1 className="text-2xl font-semibold text-gray-900">Documents</h1>
-                <div className="mt-4 sm:mt-0">
-                    <label
-                        htmlFor="file-upload"
-                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 cursor-pointer"
-                    >
-                        {isUploading ? 'Uploading...' : 'Upload Document'}
-                        <input
-                            id="file-upload"
-                            type="file"
-                            className="hidden"
-                            accept=".pdf,.doc,.docx,.txt"
-                            onChange={handleFileUpload}
-                            disabled={isUploading}
-                        />
-                    </label>
-                </div>
-            </div>
-
-            {error && (
-                <div className="rounded-md bg-red-50 p-4">
-                    <div className="flex">
-                        <div className="ml-3">
-                            <h3 className="text-sm font-medium text-red-800">{error}</h3>
+        <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md space-y-6">
+            <h1 className="text-2xl font-semibold text-gray-900 mb-4">Take Test: {test?.title}</h1>
+            {test?.questions.map((q) => (
+                <div key={q.id} className="mb-4">
+                    <div className="font-medium mb-2">{q.question_text}</div>
+                    {q.question_type === 'multiple_choice' && q.options && (
+                        <div className="space-y-1">
+                            {q.options.map((opt, idx) => (
+                                <label key={idx} className="flex items-center space-x-2">
+                                    <input
+                                        type="radio"
+                                        name={`question-${q.id}`}
+                                        value={opt}
+                                        checked={answers[q.id] === opt}
+                                        onChange={() => handleAnswerChange(q.id, opt)}
+                                    />
+                                    <span>{opt}</span>
+                                </label>
+                            ))}
                         </div>
-                    </div>
-                </div>
-            )}
-
-            <div className="bg-white shadow overflow-hidden sm:rounded-md">
-                <ul className="divide-y divide-gray-200">
-                    {documents.map((doc) => (
-                        <li key={doc.id}>
-                            <div className="px-4 py-4 sm:px-6">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        <div className="flex-shrink-0">
-                                            <svg
-                                                className="h-6 w-6 text-gray-400"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                                                />
-                                            </svg>
-                                        </div>
-                                        <div className="ml-4">
-                                            <h2 className="text-sm font-medium text-gray-900">{doc.title}</h2>
-                                            <p className="text-sm text-gray-500">{doc.file_type}</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center">
-                                        <span
-                                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${doc.status === 'processed'
-                                                ? 'bg-green-100 text-green-800'
-                                                : 'bg-yellow-100 text-yellow-800'
-                                                }`}
-                                        >
-                                            {doc.status}
-                                        </span>
-                                        <span className="ml-4 text-sm text-gray-500">
-                                            {new Date(doc.upload_date).toLocaleDateString()}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                    ))}
-                    {documents.length === 0 && (
-                        <li className="px-4 py-5 sm:px-6">
-                            <div className="text-center text-gray-500">
-                                No documents uploaded yet. Upload your first document to get started.
-                            </div>
-                        </li>
                     )}
-                </ul>
-            </div>
+                </div>
+            ))}
+            <button
+                className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+                onClick={handleSubmitTest}
+            >
+                Submit Test
+            </button>
+            {score !== null && (
+                <div className="mt-4 text-lg font-bold text-green-700">Your Score: {score}%</div>
+            )}
+            {error && <div className="text-red-500 mt-2">{error}</div>}
         </div>
     );
 };

@@ -19,12 +19,16 @@ class TestSerializer(serializers.ModelSerializer):
         fields = ['id', 'document', 'title', 'created_at', 'questions']
 
 class AnswerSerializer(serializers.ModelSerializer):
+    question_text = serializers.CharField(source='question.question_text', read_only=True)
+    correct_answer = serializers.CharField(source='question.correct_answer', read_only=True)
+
     class Meta:
         model = Answer
-        fields = ['id', 'question', 'user_answer', 'is_correct']
+        fields = ['id', 'question', 'question_text', 'user_answer', 'is_correct', 'correct_answer']
 
 class TestAttemptSerializer(serializers.ModelSerializer):
     answers = AnswerSerializer(many=True, read_only=True)
+    test = TestSerializer(read_only=True)
 
     class Meta:
         model = TestAttempt
