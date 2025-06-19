@@ -1,6 +1,6 @@
-# ConceptAI - AI-Powered Educational Platform
+# Learnix - AI-Powered Educational Platform
 
-ConceptAI is a modern web application that helps students learn more effectively by using AI to generate personalized tests from their study materials.
+Learnix is a modern web application that helps students learn more effectively by using AI to generate personalized tests from their study materials.
 
 ## Features
 
