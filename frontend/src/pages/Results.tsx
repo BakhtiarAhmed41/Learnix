@@ -1,47 +1,85 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useParams, useNavigate } from 'react-router-dom';
-import { HiCheck, HiX, HiLightBulb } from 'react-icons/hi';
+import { HiCheck, HiX } from 'react-icons/hi';
+import { testAPI } from '../services/api';
 
-interface QuestionResult {
+interface Question {
     id: number;
-    text: string;
-    type: 'multiple-choice' | 'short-answer';
-    userAnswer: string;
-    correctAnswer: string;
-    isCorrect: boolean;
-    explanation: string;
+    question_text: string;
+    question_type: 'multiple_choice' | 'short_answer';
+    correct_answer: string;
+}
+
+interface Answer {
+    id: number;
+    question: number;  // This is the question ID
+    question_text: string;  // This comes directly in the answer
+    user_answer: string;
+    is_correct: boolean;
+    correct_answer: string;  // This comes directly in the answer
+}
+
+interface TestAttempt {
+    id: number;
+    test: {
+        id: number;
+        title: string;
+        questions: Question[];
+    };
+    answers: Answer[];
+    score: number;
+    completed_at: string;
 }
 
 const Results = () => {
-    const { testId } = useParams();
+    const { attemptId } = useParams();
     const navigate = useNavigate();
     const [selectedQuestion, setSelectedQuestion] = useState<number | null>(null);
+    const [attempt, setAttempt] = useState<TestAttempt | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    // Mock results - replace with actual API call
-    const results: QuestionResult[] = [
-        {
-            id: 1,
-            text: 'What is the capital of France?',
-            type: 'multiple-choice',
-            userAnswer: 'Paris',
-            correctAnswer: 'Paris',
-            isCorrect: true,
-            explanation: 'Paris is the capital city of France, known for its iconic Eiffel Tower and rich cultural heritage.',
-        },
-        {
-            id: 2,
-            text: 'Explain the concept of photosynthesis.',
-            type: 'short-answer',
-            userAnswer: 'The process by which plants convert sunlight into energy.',
-            correctAnswer: 'Photosynthesis is the process by which plants, algae, and some bacteria convert light energy into chemical energy, producing oxygen and organic compounds.',
-            isCorrect: false,
-            explanation: 'While your answer captures the basic idea, photosynthesis is more complex. It involves the conversion of light energy into chemical energy, producing oxygen and organic compounds. The process occurs in the chloroplasts of plant cells and is essential for life on Earth.',
-        },
-    ];
+    useEffect(() => {
+        const fetchResults = async () => {
+            if (!attemptId) {
+                setError('No attempt ID provided');
+                setLoading(false);
+                return;
+            }
 
-    const score = results.filter((q) => q.isCorrect).length;
-    const percentage = (score / results.length) * 100;
+            try {
+                const data = await testAPI.getAttempt(parseInt(attemptId));
+                console.log('Attempt data:', data); // Debug log
+                setAttempt(data);
+            } catch (err) {
+                console.error('Error fetching test results:', err);
+                setError('Failed to load test results. Please try again.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchResults();
+    }, [attemptId]);
+
+    if (loading) {
+        return <div className="text-center py-8">Loading results...</div>;
+    }
+
+    if (error || !attempt) {
+        return (
+            <div className="text-center py-8">
+                <div className="text-red-500 mb-4">{error || 'Failed to load results'}</div>
+                <button
+                    onClick={() => navigate('/')}
+                    className="btn btn-primary"
+                >
+                    Back to Home
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-4xl mx-auto space-y-8">
@@ -49,13 +87,13 @@ const Results = () => {
             <div className="text-center space-y-4">
                 <h1 className="text-3xl font-bold text-gray-900">Test Results</h1>
                 <div className="flex justify-center items-center space-x-4">
-                    <div className="text-4xl font-bold text-primary-600">{percentage}%</div>
+                    <div className="text-4xl font-bold text-primary-600">{attempt.score}%</div>
                     <div className="text-gray-600">
-                        <div>Score: {score}/{results.length}</div>
+                        <div>Score: {attempt.answers.filter(a => a.is_correct).length}/{attempt.answers.length}</div>
                         <div className="text-sm">
-                            {score === results.length
+                            {attempt.answers.filter(a => a.is_correct).length === attempt.answers.length
                                 ? 'Perfect score!'
-                                : `${results.length - score} questions incorrect`}
+                                : `${attempt.answers.filter(a => !a.is_correct).length} questions incorrect`}
                         </div>
                     </div>
                 </div>
@@ -63,9 +101,9 @@ const Results = () => {
 
             {/* Questions Review */}
             <div className="space-y-4">
-                {results.map((question, index) => (
+                {attempt.answers.map((answer, index) => (
                     <motion.div
-                        key={question.id}
+                        key={answer.id}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
@@ -77,29 +115,29 @@ const Results = () => {
                                     <span className="text-sm text-gray-500">
                                         Question {index + 1}
                                     </span>
-                                    {question.isCorrect ? (
+                                    {answer.is_correct ? (
                                         <HiCheck className="h-5 w-5 text-green-500" />
                                     ) : (
                                         <HiX className="h-5 w-5 text-red-500" />
                                     )}
                                 </div>
                                 <h3 className="text-lg font-semibold text-gray-900">
-                                    {question.text}
+                                    {answer.question_text}
                                 </h3>
                             </div>
                             <button
                                 onClick={() =>
                                     setSelectedQuestion(
-                                        selectedQuestion === question.id ? null : question.id
+                                        selectedQuestion === answer.id ? null : answer.id
                                     )
                                 }
                                 className="text-primary-600 hover:text-primary-700"
                             >
-                                {selectedQuestion === question.id ? 'Hide Details' : 'Show Details'}
+                                {selectedQuestion === answer.id ? 'Hide Details' : 'Show Details'}
                             </button>
                         </div>
 
-                        {selectedQuestion === question.id && (
+                        {selectedQuestion === answer.id && (
                             <motion.div
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: 'auto' }}
@@ -109,26 +147,14 @@ const Results = () => {
                                 <div className="space-y-2">
                                     <div className="flex items-center space-x-2 text-gray-700">
                                         <span className="font-medium">Your Answer:</span>
-                                        <span>{question.userAnswer}</span>
+                                        <span>{answer.user_answer}</span>
                                     </div>
-                                    {!question.isCorrect && (
+                                    {!answer.is_correct && (
                                         <div className="flex items-center space-x-2 text-gray-700">
                                             <span className="font-medium">Correct Answer:</span>
-                                            <span>{question.correctAnswer}</span>
+                                            <span>{answer.correct_answer}</span>
                                         </div>
                                     )}
-                                </div>
-
-                                <div className="bg-primary-50 p-4 rounded-lg">
-                                    <div className="flex items-start space-x-2">
-                                        <HiLightBulb className="h-5 w-5 text-primary-600 mt-1" />
-                                        <div>
-                                            <h4 className="font-medium text-primary-900 mb-1">
-                                                Explanation
-                                            </h4>
-                                            <p className="text-primary-700">{question.explanation}</p>
-                                        </div>
-                                    </div>
                                 </div>
                             </motion.div>
                         )}
@@ -145,7 +171,7 @@ const Results = () => {
                     Back to Home
                 </button>
                 <button
-                    onClick={() => navigate('/upload')}
+                    onClick={() => navigate('/documents')}
                     className="btn btn-primary"
                 >
                     Create New Test
