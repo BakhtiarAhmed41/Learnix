@@ -21,10 +21,12 @@ class TestSerializer(serializers.ModelSerializer):
 class AnswerSerializer(serializers.ModelSerializer):
     question_text = serializers.CharField(source='question.question_text', read_only=True)
     correct_answer = serializers.CharField(source='question.correct_answer', read_only=True)
+    score = serializers.FloatField(read_only=True)
+    feedback = serializers.CharField(read_only=True)
 
     class Meta:
         model = Answer
-        fields = ['id', 'question', 'question_text', 'user_answer', 'is_correct', 'correct_answer']
+        fields = ['id', 'question', 'question_text', 'user_answer', 'is_correct', 'correct_answer', 'score', 'feedback']
 
 class TestAttemptSerializer(serializers.ModelSerializer):
     answers = AnswerSerializer(many=True, read_only=True)

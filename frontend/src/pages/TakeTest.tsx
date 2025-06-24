@@ -180,6 +180,17 @@ const TakeTest = () => {
                         ))}
                     </div>
                 )}
+                {currentQuestion.question_type === 'short_answer' && (
+                    <div>
+                        <textarea
+                            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                            rows={4}
+                            placeholder="Type your answer here..."
+                            value={answers[currentQuestion.id] || ''}
+                            onChange={e => handleAnswer(e.target.value)}
+                        />
+                    </div>
+                )}
             </motion.div>
 
             {/* Navigation */}
