@@ -44,6 +44,8 @@ class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     user_answer = models.CharField(max_length=255)
     is_correct = models.BooleanField(default=False)
+    score = models.FloatField(default=0)  # 0, 0.5, or 1 for QA
+    feedback = models.TextField(blank=True)  # Gemini's feedback for QA
 
     def __str__(self):
         return f"Answer for {self.question.question_text[:30]}" 

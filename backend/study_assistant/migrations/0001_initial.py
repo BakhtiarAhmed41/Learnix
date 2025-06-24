@@ -61,6 +61,8 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('user_answer', models.CharField(max_length=255)),
                 ('is_correct', models.BooleanField(default=False)),
+                ('score', models.FloatField(default=0)),
+                ('feedback', models.TextField(blank=True)),
                 ('question', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='study_assistant.question')),
                 ('attempt', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='answers', to='study_assistant.testattempt')),
             ],

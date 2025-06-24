@@ -129,9 +129,14 @@ export const documentAPI = {
     }
   },
 
-  generateTest: async (id: number) => {
+  generateTest: async (id: number, examType: string, questionCount: number, difficulty: string, timeLimit: number) => {
     try {
-      const response = await api.post(`/documents/${id}/generate_test/`);
+      const response = await api.post(`/documents/${id}/generate_test/`, {
+        exam_type: examType,
+        question_count: questionCount,
+        difficulty,
+        time_limit: timeLimit,
+      });
       return response.data;
     } catch (error) {
       console.error('Generate test error:', error);

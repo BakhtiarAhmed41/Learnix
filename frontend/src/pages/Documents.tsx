@@ -54,15 +54,9 @@ const Documents = () => {
     }
 
     // Step 2: Generate Test
-    if (!test) {
-        return (
-            <TestGeneration
-                documentId={uploadedDocument.id}
-                onTestGenerated={(testId: number) => {
-                    navigate(`/take-test/${testId}`);
-                }}
-            />
-        );
+    if (uploadedDocument) {
+        navigate(`/documents/${uploadedDocument.id}/generate-test`);
+        return null;
     }
 
     // Step 3: Take Test
