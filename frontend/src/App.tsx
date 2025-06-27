@@ -6,6 +6,8 @@ import Tests from './pages/Tests';
 import GenerateTest from './pages/GenerateTest';
 import TakeTest from './pages/TakeTest';
 import Results from './pages/Results';
+import Contact from './pages/Contact';
+import Feedback from './pages/Feedback';
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
           <Route path="/tests" element={<Tests />} />
           <Route path="/take-test/:testId" element={<TakeTest />} />
           <Route path="/results/:attemptId" element={<Results />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/feedback" element={<Feedback />} />
         </Routes>
       </Layout>
     </Router>

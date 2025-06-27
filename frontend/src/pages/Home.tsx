@@ -5,18 +5,18 @@ const Home = () => {
         <div className="space-y-16">
             {/* Hero Section */}
             <div className="text-center">
-                <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
+                <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 dark:text-gray-100 sm:text-5xl md:text-6xl">
                     <span className="block">Transform Your Learning with</span>
-                    <span className="block text-indigo-600">AI-Powered Education</span>
+                    <span className="block text-indigo-600 dark:text-indigo-400">AI-Powered Education</span>
                 </h1>
-                <p className="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
+                <p className="mt-3 max-w-md mx-auto text-base text-gray-500 dark:text-gray-300 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
                     Upload your study materials and let our AI generate personalized tests to help you master any subject.
                 </p>
                 <div className="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
                     <div className="rounded-md shadow">
                         <Link
                             to="/documents"
-                            className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10"
+                            className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 md:py-4 md:text-lg md:px-10"
                         >
                             Get Started
                         </Link>
@@ -25,12 +25,12 @@ const Home = () => {
             </div>
 
             {/* Features Section */}
-            <div className="py-12 bg-white">
+            <div className="py-12 bg-white dark:bg-gray-800">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="lg:text-center">
-                        <h2 className="text-base text-indigo-600 font-semibold tracking-wide uppercase">Features</h2>
-                        <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-                            Everything you need to excel
+                        <h2 className="text-base text-indigo-600 dark:text-indigo-400 font-semibold tracking-wide uppercase">Features</h2>
+                        <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 dark:text-gray-100 sm:text-4xl">
+                            Everything you need to excel in your exams
                         </p>
                     </div>
 
@@ -44,8 +44,8 @@ const Home = () => {
                                     </svg>
                                 </div>
                                 <div className="ml-16">
-                                    <h3 className="text-lg leading-6 font-medium text-gray-900">Document Upload</h3>
-                                    <p className="mt-2 text-base text-gray-500">
+                                    <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">Document Upload</h3>
+                                    <p className="mt-2 text-base text-gray-500 dark:text-gray-300">
                                         Upload your study materials in various formats and let our AI analyze them.
                                     </p>
                                 </div>
@@ -59,8 +59,8 @@ const Home = () => {
                                     </svg>
                                 </div>
                                 <div className="ml-16">
-                                    <h3 className="text-lg leading-6 font-medium text-gray-900">AI-Generated Tests</h3>
-                                    <p className="mt-2 text-base text-gray-500">
+                                    <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">AI-Generated Tests</h3>
+                                    <p className="mt-2 text-base text-gray-500 dark:text-gray-300">
                                         Get personalized tests generated based on your study materials.
                                     </p>
                                 </div>
@@ -74,8 +74,8 @@ const Home = () => {
                                     </svg>
                                 </div>
                                 <div className="ml-16">
-                                    <h3 className="text-lg leading-6 font-medium text-gray-900">Instant Feedback</h3>
-                                    <p className="mt-2 text-base text-gray-500">
+                                    <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">Instant Feedback</h3>
+                                    <p className="mt-2 text-base text-gray-500 dark:text-gray-300">
                                         Receive immediate feedback on your answers and track your progress.
                                     </p>
                                 </div>
@@ -89,8 +89,8 @@ const Home = () => {
                                     </svg>
                                 </div>
                                 <div className="ml-16">
-                                    <h3 className="text-lg leading-6 font-medium text-gray-900">Progress Tracking</h3>
-                                    <p className="mt-2 text-base text-gray-500">
+                                    <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">Progress Tracking</h3>
+                                    <p className="mt-2 text-base text-gray-500 dark:text-gray-300">
                                         Monitor your learning progress and identify areas for improvement.
                                     </p>
                                 </div>

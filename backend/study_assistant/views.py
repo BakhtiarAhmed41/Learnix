@@ -1,5 +1,5 @@
 from rest_framework import viewsets, status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from .models import Document, Test, Question, TestAttempt, Answer
@@ -14,6 +14,8 @@ import os
 from pypdf import PdfReader
 from docx import Document as DocxDocument # Renamed to avoid conflict with Django model
 import json # Import the json module
+from rest_framework.permissions import AllowAny
+from django.core.mail import send_mail
 
 class DocumentViewSet(viewsets.ModelViewSet):
     queryset = Document.objects.all()
@@ -332,4 +334,30 @@ class TestAttemptViewSet(viewsets.ModelViewSet):
         attempt.completed_at = timezone.now()
         attempt.save()
 
-        return Response(self.get_serializer(attempt).data) 
+        return Response(self.get_serializer(attempt).data)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def contact_view(request):
+    name = request.data.get('name')
+    email = request.data.get('email')
+    message = request.data.get('message')
+    if not (name and email and message):
+        return Response({'error': 'All fields are required.'}, status=400)
+    subject = f'Contact Form Submission from {name}'
+    body = f'Name: {name}\nEmail: {email}\nMessage:\n{message}'
+    send_mail(subject, body, email, ['ahmedbakhtiar41@gmail.com'])
+    return Response({'success': 'Message sent.'})
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def feedback_view(request):
+    name = request.data.get('name')
+    email = request.data.get('email')
+    feedback = request.data.get('feedback')
+    if not (name and email and feedback):
+        return Response({'error': 'All fields are required.'}, status=400)
+    subject = f'Feedback Form Submission from {name}'
+    body = f'Name: {name}\nEmail: {email}\nFeedback:\n{feedback}'
+    send_mail(subject, body, email, ['ahmedbakhtiar41@gmail.com'])
+    return Response({'success': 'Feedback sent.'}) 
