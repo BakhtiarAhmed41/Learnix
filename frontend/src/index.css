@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-gray-50 text-gray-900;
+    @apply bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white;
   }
 }
 
@@ -18,11 +18,11 @@
   }
 
   .btn-secondary {
-    @apply bg-gray-200 text-gray-800 hover:bg-gray-300;
+    @apply bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600;
   }
 
   .input {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+    @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white;
   }
 }
 
@@ -95,5 +95,25 @@ button:focus-visible {
 
   button {
     background-color: #f9f9f9;
+  }
+}
+
+/* Dark mode overrides for better visibility */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: rgba(255, 255, 255, 0.87);
+    background-color: #242424;
+  }
+
+  a {
+    color: #747bff;
+  }
+
+  a:hover {
+    color: #535bf2;
+  }
+
+  button {
+    background-color: #1a1a1a;
   }
 }

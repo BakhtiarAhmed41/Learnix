@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, useParams } from 'react-router-dom';
-import { HiClock, HiCheck, HiX } from 'react-icons/hi';
+import { HiClock, HiCheck, HiX, HiChevronLeft, HiChevronRight } from 'react-icons/hi';
 import { testAPI } from '../services/api';
 
 interface Question {
@@ -112,35 +112,60 @@ const TakeTest = () => {
     };
 
     if (loading) {
-        return <div className="text-center py-8">Loading test...</div>;
+        return (
+            <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 dark:border-indigo-400 mx-auto mb-4"></div>
+                <p className="text-gray-900 dark:text-white">Loading test...</p>
+            </div>
+        );
     }
 
     if (error) {
-        return <div className="text-center py-8 text-red-500">Error: {error}</div>;
+        return (
+            <div className="text-center py-8">
+                <div className="text-red-500 dark:text-red-400 mb-4">Error: {error}</div>
+                <button
+                    onClick={() => navigate('/')}
+                    className="btn btn-primary"
+                >
+                    Back to Home
+                </button>
+            </div>
+        );
     }
 
     if (!test || test.questions.length === 0) {
-        return <div className="text-center py-8">No questions found for this test.</div>;
+        return (
+            <div className="text-center py-8">
+                <p className="text-gray-900 dark:text-white mb-4">No questions found for this test.</p>
+                <button
+                    onClick={() => navigate('/')}
+                    className="btn btn-primary"
+                >
+                    Back to Home
+                </button>
+            </div>
+        );
     }
 
     const currentQuestion = test.questions[currentQuestionIndex];
     const progress = (Object.keys(answers).length / test.questions.length) * 100;
 
     return (
-        <div className="max-w-4xl mx-auto space-y-8">
+        <div className="max-w-4xl mx-auto space-y-8 p-4">
             {/* Header */}
             <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold text-gray-900">Take Test: {test.title}</h1>
-                <div className="flex items-center space-x-2 text-gray-600">
-                    <HiClock className="h-5 w-5" />
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Take Test: {test.title}</h1>
+                <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <HiClock className="h-5 w-5 text-red-500" />
                     <span className="font-medium">{formatTime(timeLeft)}</span>
                 </div>
             </div>
 
             {/* Progress Bar */}
-            <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
                 <motion.div
-                    className="bg-primary-600 h-2 rounded-full"
+                    className="bg-indigo-600 dark:bg-indigo-500 h-3 rounded-full"
                     initial={{ width: 0 }}
                     animate={{ width: `${progress}%` }}
                     transition={{ duration: 0.3 }}
@@ -153,66 +178,107 @@ const TakeTest = () => {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="bg-white p-6 rounded-lg shadow-md space-y-6"
+                className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg space-y-8 border border-gray-200 dark:border-gray-700"
             >
-                <div className="space-y-2">
-                    <span className="text-sm text-gray-500">
-                        Question {currentQuestionIndex + 1} of {test.questions.length}
-                    </span>
-                    <h2 className="text-xl font-semibold text-gray-900">
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
+                            Question {currentQuestionIndex + 1} of {test.questions.length}
+                        </span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">
+                            {Math.round(progress)}% Complete
+                        </span>
+                    </div>
+                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white leading-relaxed">
                         {currentQuestion.question_text}
                     </h2>
                 </div>
 
                 {currentQuestion.question_type === 'multiple_choice' && currentQuestion.options && (
-                    <div className="space-y-3">
-                        {currentQuestion.options.map((option) => (
-                            <button
+                    <div className="space-y-4">
+                        {currentQuestion.options.map((option, index) => (
+                            <motion.button
                                 key={option}
                                 onClick={() => handleAnswer(option)}
-                                className={`w-full p-4 text-left rounded-lg border-2 transition-all duration-200 ${answers[currentQuestion.id] === option
-                                    ? 'border-primary-600 bg-primary-50'
-                                    : 'border-gray-200 hover:border-primary-600'
+                                className={`w-full p-6 text-left rounded-xl border-2 transition-all duration-300 hover:shadow-md ${answers[currentQuestion.id] === option
+                                        ? 'border-indigo-600 dark:border-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 shadow-md'
+                                        : 'border-gray-200 dark:border-gray-600 hover:border-indigo-400 dark:hover:border-indigo-400 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600'
                                     }`}
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
                             >
-                                {option}
-                            </button>
+                                <div className="flex items-center space-x-4">
+                                    <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-medium ${answers[currentQuestion.id] === option
+                                            ? 'border-indigo-600 dark:border-indigo-400 bg-indigo-600 dark:bg-indigo-400 text-white'
+                                            : 'border-gray-300 dark:border-gray-500 text-gray-500 dark:text-gray-400'
+                                        }`}>
+                                        {String.fromCharCode(65 + index)} {/* A, B, C, D */}
+                                    </div>
+                                    <span className={`text-lg ${answers[currentQuestion.id] === option
+                                            ? 'text-indigo-900 dark:text-indigo-100 font-medium'
+                                            : 'text-gray-900 dark:text-white'
+                                        }`}>
+                                        {option}
+                                    </span>
+                                </div>
+                            </motion.button>
                         ))}
                     </div>
                 )}
+
                 {currentQuestion.question_type === 'short_answer' && (
-                    <div>
+                    <div className="space-y-4">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
+                            Your Answer
+                        </label>
                         <textarea
-                            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                            rows={4}
-                            placeholder="Type your answer here..."
+                            className="w-full p-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-400 dark:focus:border-indigo-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none"
+                            rows={6}
+                            placeholder="Type your detailed answer here..."
                             value={answers[currentQuestion.id] || ''}
                             onChange={e => handleAnswer(e.target.value)}
                         />
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                            Provide a comprehensive answer. You can use multiple sentences to explain your reasoning.
+                        </p>
                     </div>
                 )}
             </motion.div>
 
             {/* Navigation */}
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center">
                 <button
                     onClick={() => setCurrentQuestionIndex((prev) => Math.max(0, prev - 1))}
                     disabled={currentQuestionIndex === 0}
-                    className="btn btn-secondary"
+                    className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-medium transition-all duration-200 ${currentQuestionIndex === 0
+                            ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed'
+                            : 'text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                        }`}
                 >
-                    Previous
+                    <HiChevronLeft className="h-5 w-5" />
+                    <span>Previous</span>
                 </button>
-                <div className="space-x-4">
+
+                <div className="flex items-center space-x-4">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                        {answers[currentQuestion.id] ? 'Answered' : 'Not answered'}
+                    </span>
+
                     {currentQuestionIndex < test.questions.length - 1 ? (
                         <button
                             onClick={() => setCurrentQuestionIndex((prev) => prev + 1)}
-                            className="btn btn-primary"
+                            className="flex items-center space-x-2 px-6 py-3 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200 shadow-md hover:shadow-lg"
                         >
-                            Next
+                            <span>Next</span>
+                            <HiChevronRight className="h-5 w-5" />
                         </button>
                     ) : (
-                        <button onClick={handleSubmit} className="btn btn-primary">
-                            Submit Test
+                        <button
+                            onClick={handleSubmit}
+                            className="flex items-center space-x-2 px-6 py-3 bg-green-600 dark:bg-green-500 text-white rounded-lg font-medium hover:bg-green-700 dark:hover:bg-green-600 transition-all duration-200 shadow-md hover:shadow-lg"
+                        >
+                            <HiCheck className="h-5 w-5" />
+                            <span>Submit Test</span>
                         </button>
                     )}
                 </div>
