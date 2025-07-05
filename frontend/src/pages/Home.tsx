@@ -5,7 +5,7 @@ const Home = () => {
         <div className="space-y-16">
             {/* Hero Section */}
             <div className="text-center">
-                <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 dark:text-gray-100 sm:text-5xl md:text-6xl">
+                <h1 className="text-4xl mt-8 tracking-tight font-extrabold text-gray-900 dark:text-gray-100 sm:text-5xl md:text-6xl">
                     <span className="block">Transform Your Learning with</span>
                     <span className="block text-indigo-600 dark:text-indigo-400">AI-Powered Education</span>
                 </h1>

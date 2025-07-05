@@ -46,7 +46,7 @@ const Layout = ({ children }: LayoutProps) => {
                                 to="/documents"
                                 className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
                             >
-                                Documents
+                                Generate Test
                             </Link>
                             <Link
                                 to="/contact"

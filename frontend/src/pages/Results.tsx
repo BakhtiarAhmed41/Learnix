@@ -145,7 +145,8 @@ const Results = () => {
                                         selectedQuestion === answer.id ? null : answer.id
                                     )
                                 }
-                                className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
+                                className="w-28 h-9 min-w-[7rem] min-h-[2.25rem] flex items-center justify-center bg-gray-50 dark:bg-gray-700 text-primary-600 dark:text-primary-400 rounded-lg font-medium text-sm shadow-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition-all duration-200 whitespace-nowrap"
+                                style={{ alignSelf: 'center' }}
                             >
                                 {selectedQuestion === answer.id ? 'Hide Details' : 'Show Details'}
                             </button>
@@ -156,34 +157,37 @@ const Results = () => {
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: 'auto' }}
                                 exit={{ opacity: 0, height: 0 }}
-                                className="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-600"
+                                className="pt-4 border-t border-gray-200 dark:border-gray-600"
                             >
-                                <div className="space-y-2">
-                                    <div className="flex items-center space-x-2 text-gray-700 dark:text-gray-300">
-                                        <span className="font-medium">Your Answer:</span>
-                                        <span>{answer.user_answer}</span>
+                                <div className="bg-gray-50 dark:bg-gray-900/40 border-l-4 border-indigo-300 dark:border-indigo-500 rounded-md p-4 space-y-4">
+                                    <div className="mb-2">
+                                        <span className="font-semibold text-gray-800 dark:text-gray-100 mr-2">Your Answer:</span>
+                                        <span className="text-gray-700 dark:text-gray-300">{answer.user_answer}</span>
                                     </div>
                                     {!answer.is_correct && (
-                                        <div className="flex items-center space-x-2 text-gray-700 dark:text-gray-300">
-                                            <span className="font-medium">Correct Answer:</span>
-                                            <span>{answer.correct_answer}</span>
+                                        <div className="mb-2">
+                                            <span className="font-semibold text-gray-800 dark:text-gray-100 mr-2">Correct Answer:</span>
+                                            <span className="text-gray-700 dark:text-gray-300">{answer.correct_answer}</span>
                                         </div>
                                     )}
-                                    {/* Show score and feedback for QA */}
                                     {answer.score !== undefined && (
-                                        <div className="flex items-center space-x-2 text-gray-700 dark:text-gray-300">
-                                            <span className="font-medium">Score:</span>
-                                            <span>{answer.score}</span>
+                                        <div className="mb-2">
+                                            <span className="font-semibold text-gray-800 dark:text-gray-100 mr-2">Score:</span>
+                                            <span className="text-gray-700 dark:text-gray-300">{answer.score}</span>
                                         </div>
                                     )}
                                     {answer.feedback && (
-                                        <div className="flex items-center space-x-2 text-gray-700 dark:text-gray-300">
-                                            <span className="font-medium">Feedback:</span>
-                                            <span>{answer.feedback}</span>
+                                        <div className="mb-2">
+                                            <span className="font-semibold text-gray-800 dark:text-gray-100 mr-2">Feedback:</span>
+                                            <span className="text-gray-700 dark:text-gray-300">{answer.feedback}</span>
                                         </div>
                                     )}
                                 </div>
                             </motion.div>
+                        )}
+                        {/* Add horizontal line between answers, except after the last one */}
+                        {index < attempt.answers.length - 1 && (
+                            <hr className="my-4 border-gray-600 dark:border-gray-700" />
                         )}
                     </motion.div>
                 ))}

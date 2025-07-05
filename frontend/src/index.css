@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white;
+    @apply bg-gray-900 text-white;
   }
 }
 
@@ -14,16 +14,118 @@
   }
 
   .btn-primary {
-    @apply bg-primary-600 text-white hover:bg-primary-700;
+    @apply bg-indigo-600 text-white hover:bg-indigo-700;
   }
 
   .btn-secondary {
-    @apply bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600;
+    @apply bg-gray-700 text-gray-200 hover:bg-gray-600;
   }
 
   .input {
-    @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white;
+    @apply w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-800 text-white;
   }
+}
+
+/* Custom animations for enhanced button effects */
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(99, 102, 241, 0.5);
+  }
+
+  50% {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.8), 0 0 30px rgba(99, 102, 241, 0.6);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes bounce-subtle {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Enhanced button styles */
+.btn-enhanced {
+  @apply relative overflow-hidden transition-all duration-300;
+}
+
+.btn-enhanced::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn-enhanced:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Dark theme specific enhancements */
+.dark .btn-enhanced {
+  @apply shadow-lg;
+}
+
+.dark .btn-enhanced:hover {
+  @apply shadow-2xl;
+  animation: pulse-glow 2s infinite;
+}
+
+/* Loading state animations */
+.loading-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Success state animations */
+.success-pulse {
+  animation: pulse-glow 1s ease-in-out;
+}
+
+/* Hover effects for dark theme */
+.dark .hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dark .hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
 
 :root {
@@ -31,9 +133,9 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
+  color-scheme: dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #111827;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -43,12 +145,12 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: #6366f1;
   text-decoration: inherit;
 }
 
 a:hover {
-  color: #535bf2;
+  color: #4f46e5;
 }
 
 body {
@@ -69,13 +171,15 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: #374151;
+  color: #f9fafb;
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: all 0.25s;
 }
 
 button:hover {
-  border-color: #646cff;
+  border-color: #6366f1;
+  background-color: #4b5563;
 }
 
 button:focus,
@@ -83,6 +187,26 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* Default dark theme styles */
+:root {
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #111827;
+}
+
+a {
+  color: #6366f1;
+}
+
+a:hover {
+  color: #4f46e5;
+}
+
+button {
+  background-color: #374151;
+  color: #f9fafb;
+}
+
+/* Light theme overrides (if needed) */
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
@@ -95,25 +219,6 @@ button:focus-visible {
 
   button {
     background-color: #f9f9f9;
-  }
-}
-
-/* Dark mode overrides for better visibility */
-@media (prefers-color-scheme: dark) {
-  :root {
-    color: rgba(255, 255, 255, 0.87);
-    background-color: #242424;
-  }
-
-  a {
-    color: #747bff;
-  }
-
-  a:hover {
-    color: #535bf2;
-  }
-
-  button {
-    background-color: #1a1a1a;
+    color: #213547;
   }
 }
