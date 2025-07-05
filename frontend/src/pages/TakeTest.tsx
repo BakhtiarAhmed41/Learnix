@@ -29,6 +29,7 @@ const TakeTest = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [attemptId, setAttemptId] = useState<number | null>(null);
+    const [submitting, setSubmitting] = useState(false);
 
     // Define handleSubmit before the useEffect that uses it
     const handleSubmit = useCallback(async () => {
@@ -36,7 +37,7 @@ const TakeTest = () => {
             setError('No test attempt found. Please refresh the page and try again.');
             return;
         }
-
+        setSubmitting(true);
         try {
             // Format answers for API
             const formattedAnswers = Object.entries(answers).map(([questionId, answer]) => ({
@@ -52,6 +53,8 @@ const TakeTest = () => {
         } catch (error) {
             console.error('Error submitting test:', error);
             setError('Failed to submit test. Please try again.');
+        } finally {
+            setSubmitting(false);
         }
     }, [navigate, testId, answers, attemptId]);
 
@@ -111,6 +114,9 @@ const TakeTest = () => {
         }
     };
 
+    // Helper to check if all questions are answered
+    const allQuestionsAnswered = test && test.questions.every(q => answers[q.id] && answers[q.id].trim() !== '');
+
     if (loading) {
         return (
             <div className="text-center py-8">
@@ -155,7 +161,6 @@ const TakeTest = () => {
         <div className="max-w-4xl mx-auto space-y-8 p-4">
             {/* Header */}
             <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Take Test: {test.title}</h1>
                 <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700">
                     <HiClock className="h-5 w-5 text-red-500" />
                     <span className="font-medium">{formatTime(timeLeft)}</span>
@@ -163,13 +168,34 @@ const TakeTest = () => {
             </div>
 
             {/* Progress Bar */}
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 relative overflow-hidden">
                 <motion.div
-                    className="bg-indigo-600 dark:bg-indigo-500 h-3 rounded-full"
+                    className="bg-gradient-to-r from-indigo-600 to-indigo-700 dark:from-indigo-500 dark:to-indigo-600 h-3 rounded-full relative"
                     initial={{ width: 0 }}
                     animate={{ width: `${progress}%` }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                >
+                    {/* Animated glow effect */}
+                    <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-20"
+                        initial={{ x: "-100%" }}
+                        animate={{ x: "100%" }}
+                        transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                        }}
+                    />
+                </motion.div>
+                {/* Progress percentage indicator */}
+                <motion.div
+                    className="absolute -top-8 right-0 text-xs text-gray-600 dark:text-gray-300 font-medium"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
-                />
+                >
+                    {Math.round(progress)}%
+                </motion.div>
             </div>
 
             {/* Question */}
@@ -200,23 +226,23 @@ const TakeTest = () => {
                             <motion.button
                                 key={option}
                                 onClick={() => handleAnswer(option)}
-                                className={`w-full p-6 text-left rounded-xl border-2 transition-all duration-300 hover:shadow-md ${answers[currentQuestion.id] === option
-                                        ? 'border-indigo-600 dark:border-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 shadow-md'
-                                        : 'border-gray-200 dark:border-gray-600 hover:border-indigo-400 dark:hover:border-indigo-400 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600'
+                                className={`w-full p-6 text-left rounded-xl border-2 transition-all duration-300 hover:scale-[1.03] hover:z-10 hover:shadow-xl hover:border-indigo-600 dark:hover:border-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-800/40 hover:text-indigo-700 dark:hover:text-indigo-200 ${answers[currentQuestion.id] === option
+                                    ? 'border-indigo-600 dark:border-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 shadow-md'
+                                    : 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
                                     }`}
-                                whileHover={{ scale: 1.02 }}
+                                whileHover={{ scale: 1.03 }}
                                 whileTap={{ scale: 0.98 }}
                             >
                                 <div className="flex items-center space-x-4">
                                     <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-medium ${answers[currentQuestion.id] === option
-                                            ? 'border-indigo-600 dark:border-indigo-400 bg-indigo-600 dark:bg-indigo-400 text-white'
-                                            : 'border-gray-300 dark:border-gray-500 text-gray-500 dark:text-gray-400'
+                                        ? 'border-indigo-600 dark:border-indigo-400 bg-indigo-600 dark:bg-indigo-400 text-white'
+                                        : 'border-gray-300 dark:border-gray-500 text-gray-500 dark:text-gray-400'
                                         }`}>
                                         {String.fromCharCode(65 + index)} {/* A, B, C, D */}
                                     </div>
                                     <span className={`text-lg ${answers[currentQuestion.id] === option
-                                            ? 'text-indigo-900 dark:text-indigo-100 font-medium'
-                                            : 'text-gray-900 dark:text-white'
+                                        ? 'text-indigo-900 dark:text-indigo-100 font-medium'
+                                        : 'text-gray-900 dark:text-white'
                                         }`}>
                                         {option}
                                     </span>
@@ -247,44 +273,153 @@ const TakeTest = () => {
 
             {/* Navigation */}
             <div className="flex justify-between items-center">
-                <button
+                <motion.button
                     onClick={() => setCurrentQuestionIndex((prev) => Math.max(0, prev - 1))}
                     disabled={currentQuestionIndex === 0}
-                    className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-medium transition-all duration-200 ${currentQuestionIndex === 0
-                            ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed'
-                            : 'text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 border-2 relative overflow-hidden ${currentQuestionIndex === 0
+                        ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500 dark:border-gray-700'
+                        : 'bg-white text-gray-900 border-gray-300 hover:bg-indigo-50 hover:text-indigo-600 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-indigo-900/20 dark:hover:text-indigo-400 shadow-md hover:shadow-xl'
                         }`}
+                    whileHover={currentQuestionIndex !== 0 ? { scale: 1.05 } : {}}
+                    whileTap={currentQuestionIndex !== 0 ? { scale: 0.95 } : {}}
                 >
-                    <HiChevronLeft className="h-5 w-5" />
+                    <motion.div
+                        whileHover={currentQuestionIndex !== 0 ? { x: -3 } : {}}
+                        transition={{ duration: 0.2 }}
+                    >
+                        <HiChevronLeft className="h-5 w-5" />
+                    </motion.div>
                     <span>Previous</span>
-                </button>
+                </motion.button>
 
-                <div className="flex items-center space-x-4">
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
-                        {answers[currentQuestion.id] ? 'Answered' : 'Not answered'}
-                    </span>
+                {currentQuestionIndex === test.questions.length - 1 ? (
+                    // Submit button on last question
+                    <motion.button
+                        onClick={handleSubmit}
+                        disabled={submitting || !answers[currentQuestion.id] || answers[currentQuestion.id].trim() === ''}
+                        className={`flex items-center space-x-2 px-8 py-4 rounded-xl font-semibold transition-all duration-300 border-2 relative overflow-hidden ${submitting
+                            ? 'opacity-80 cursor-not-allowed'
+                            : (!answers[currentQuestion.id] || answers[currentQuestion.id].trim() === '')
+                                ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500 dark:border-gray-700'
+                                : 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white border-indigo-600 hover:from-indigo-700 hover:to-indigo-800 dark:from-indigo-500 dark:to-indigo-600 dark:border-indigo-400 dark:hover:from-indigo-600 dark:hover:to-indigo-700 shadow-lg hover:shadow-2xl'
+                            }`}
+                        whileHover={!submitting && answers[currentQuestion.id] && answers[currentQuestion.id].trim() !== '' ? {
+                            scale: 1.05,
+                            boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
+                        } : {}}
+                        whileTap={!submitting ? { scale: 0.95 } : {}}
+                        animate={submitting ? {
+                            scale: [1, 1.02, 1],
+                            transition: {
+                                duration: 1.5,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                            }
+                        } : {}}
+                    >
+                        {/* Animated background gradient for submitting state */}
+                        {submitting && (
+                            <motion.div
+                                className="absolute inset-0 bg-gradient-to-r from-indigo-400 via-indigo-500 to-indigo-600 dark:from-indigo-500 dark:via-indigo-600 dark:to-indigo-700"
+                                initial={{ x: "-100%" }}
+                                animate={{ x: "100%" }}
+                                transition={{
+                                    duration: 2,
+                                    repeat: Infinity,
+                                    ease: "easeInOut"
+                                }}
+                            />
+                        )}
 
-                    {currentQuestionIndex < test.questions.length - 1 ? (
-                        <button
-                            onClick={() => setCurrentQuestionIndex((prev) => prev + 1)}
-                            className="flex items-center space-x-2 px-6 py-3 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200 shadow-md hover:shadow-lg"
+                        {/* Content with relative positioning to stay above animated background */}
+                        <div className="relative flex items-center space-x-2">
+                            {submitting ? (
+                                <motion.div
+                                    className="flex items-center space-x-2"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ duration: 0.3 }}
+                                >
+                                    <motion.svg
+                                        className="h-5 w-5 text-white"
+                                        viewBox="0 0 24 24"
+                                        animate={{ rotate: 360 }}
+                                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                    >
+                                        <circle
+                                            className="opacity-25"
+                                            cx="12"
+                                            cy="12"
+                                            r="10"
+                                            stroke="currentColor"
+                                            strokeWidth="4"
+                                            fill="none"
+                                        />
+                                        <motion.path
+                                            className="opacity-75"
+                                            fill="currentColor"
+                                            d="M4 12a8 8 0 018-8v8z"
+                                            initial={{ pathLength: 0 }}
+                                            animate={{ pathLength: 1 }}
+                                            transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
+                                        />
+                                    </motion.svg>
+                                    <motion.span
+                                        initial={{ opacity: 0, x: -10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ duration: 0.3, delay: 0.1 }}
+                                    >
+                                        Submitting...
+                                    </motion.span>
+                                </motion.div>
+                            ) : (
+                                <motion.div
+                                    className="flex items-center space-x-2"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ duration: 0.3 }}
+                                >
+                                    <motion.div
+                                        whileHover={{ rotate: 360 }}
+                                        transition={{ duration: 0.6, ease: "easeInOut" }}
+                                    >
+                                        <HiCheck className="h-5 w-5" />
+                                    </motion.div>
+                                    <span>Submit Test</span>
+                                </motion.div>
+                            )}
+                        </div>
+
+                        {/* Success pulse effect when enabled */}
+                        {!submitting && answers[currentQuestion.id] && answers[currentQuestion.id].trim() !== '' && (
+                            <motion.div
+                                className="absolute inset-0 rounded-xl border-2 border-green-400 dark:border-green-300"
+                                initial={{ scale: 1, opacity: 0 }}
+                                animate={{ scale: 1.1, opacity: [0, 0.5, 0] }}
+                                transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
+                            />
+                        )}
+                    </motion.button>
+                ) : (
+                    // Next button for other questions
+                    <motion.button
+                        onClick={() => setCurrentQuestionIndex((prev) => Math.min(test.questions.length - 1, prev + 1))}
+                        className="flex items-center space-x-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 border-2 bg-white text-gray-900 border-gray-300 hover:bg-indigo-50 hover:text-indigo-600 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-indigo-900/20 dark:hover:text-indigo-400 shadow-md hover:shadow-xl relative overflow-hidden"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                    >
+                        <span>Next</span>
+                        <motion.div
+                            whileHover={{ x: 3 }}
+                            transition={{ duration: 0.2 }}
                         >
-                            <span>Next</span>
                             <HiChevronRight className="h-5 w-5" />
-                        </button>
-                    ) : (
-                        <button
-                            onClick={handleSubmit}
-                            className="flex items-center space-x-2 px-6 py-3 bg-green-600 dark:bg-green-500 text-white rounded-lg font-medium hover:bg-green-700 dark:hover:bg-green-600 transition-all duration-200 shadow-md hover:shadow-lg"
-                        >
-                            <HiCheck className="h-5 w-5" />
-                            <span>Submit Test</span>
-                        </button>
-                    )}
-                </div>
+                        </motion.div>
+                    </motion.button>
+                )}
             </div>
         </div>
     );
 };
 
-export default TakeTest; 
+export default TakeTest;

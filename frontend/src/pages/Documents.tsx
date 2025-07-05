@@ -29,6 +29,35 @@ interface Test {
     questions: Question[];
 }
 
+const examTypes = [
+  {
+    value: 'mcq',
+    label: 'Multiple Choice Questions',
+    description: 'AI-generated multiple choice questions with intelligent distractors. The system performs comprehensive content analysis, detects numerical elements, and creates questions that test deep understanding rather than surface-level facts.',
+    features: [
+      'Advanced content complexity analysis',
+      'Intelligent numerical question detection and generation',
+      'Concept-focused questions (no metadata or trivial facts)',
+      'Quality validation and improvement algorithms',
+      'Mathematical and analytical question types',
+      'Plausible distractors based on common misconceptions'
+    ]
+  },
+  {
+    value: 'qa',
+    label: 'Short Answer Questions',
+    description: 'Open-ended questions that test comprehensive understanding and critical thinking. The AI performs deep content analysis, identifies key concepts, and generates questions requiring analysis, synthesis, and application.',
+    features: [
+      'Deep content extraction and prioritization',
+      'Conceptual depth and complexity analysis',
+      'Numerical and mathematical reasoning questions',
+      'Advanced analytical and synthesis questions',
+      'Comprehensive AI grading with detailed feedback',
+      'Partial credit for partially correct answers'
+    ]
+  }
+];
+
 const Documents = () => {
     const [uploadedDocument, setUploadedDocument] = useState<Document | null>(null);
     const [test, setTest] = useState<Test | null>(null);
