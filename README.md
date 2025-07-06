@@ -154,14 +154,6 @@ Learnix is a sophisticated study assistant that leverages advanced AI to generat
 
 We welcome contributions to improve Learnix's capabilities and educational impact. Please read our contributing guidelines and code of conduct.
 
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 📞 Support
-
-For support, questions, or feedback, please contact us through the application's contact form or create an issue in the repository.
-
 ---
 
 **Learnix**: Transforming education through advanced AI-powered assessment and learning.
