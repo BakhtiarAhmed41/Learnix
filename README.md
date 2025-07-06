@@ -1,6 +1,6 @@
-# ConceptAI - Advanced AI-Powered Study Assistant
+# Learnix - Advanced AI-Powered Study Assistant
 
-ConceptAI is a sophisticated study assistant that leverages advanced AI to generate high-quality educational assessments. The system uses comprehensive content analysis, intelligent question generation, and analytical grading to provide an exceptional learning experience.
+Learnix is a sophisticated study assistant that leverages advanced AI to generate high-quality educational assessments. The system uses comprehensive content analysis, intelligent question generation, and analytical grading to provide an exceptional learning experience.
 
 ## 🧠 Advanced AI Capabilities
 
@@ -152,7 +152,7 @@ ConceptAI is a sophisticated study assistant that leverages advanced AI to gener
 
 ## 🤝 Contributing
 
-We welcome contributions to improve ConceptAI's capabilities and educational impact. Please read our contributing guidelines and code of conduct.
+We welcome contributions to improve Learnix's capabilities and educational impact. Please read our contributing guidelines and code of conduct.
 
 ## 📄 License
 
@@ -164,4 +164,4 @@ For support, questions, or feedback, please contact us through the application's
 
 ---
 
-**ConceptAI**: Transforming education through advanced AI-powered assessment and learning.
+**Learnix**: Transforming education through advanced AI-powered assessment and learning.
