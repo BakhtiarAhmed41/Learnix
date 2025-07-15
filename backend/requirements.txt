@@ -3,3 +3,5 @@ djangorestframework
 django-cors-headers
 openai
 google-generativeai 
+gunicorn
+dj-database-url 
