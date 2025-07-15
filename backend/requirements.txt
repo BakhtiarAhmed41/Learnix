@@ -5,3 +5,4 @@ openai
 google-generativeai 
 gunicorn
 dj-database-url 
+python-dotenv
