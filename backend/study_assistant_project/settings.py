@@ -7,7 +7,7 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-your-secret-key-here'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-your-secret-key-here')
 
 DEBUG = True
 
@@ -56,12 +56,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'study_assistant_project.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+DATABASE_URL = os.getenv('DATABASE_URL')
+if DATABASE_URL:
+    import dj_database_url
+    DATABASES = {
+        'default': dj_database_url.parse(DATABASE_URL)
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -102,4 +109,4 @@ CORS_ALLOW_HEADERS = list(default_headers)
 # OPENAI_API_KEY = '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'
 
 # Gemini settings
-GEMINI_API_KEY = "AIzaSyAKIQg7eq9T_lIGTQxecOpcDMnDe7VDhxo" # Directly assign your Gemini API key here, or use os.getenv('GEMINI_API_KEY')
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
