@@ -6,3 +6,5 @@ google-generativeai
 gunicorn
 dj-database-url 
 python-dotenv
+pypdf
+python-docx
