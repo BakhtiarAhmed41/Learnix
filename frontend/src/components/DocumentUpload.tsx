@@ -27,7 +27,7 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadSuccess }) => {
         setError(null);
 
         try {
-            await documentAPI.upload(file);
+            await documentAPI.upload(file, file.name);
             setFile(null);
             onUploadSuccess();
         } catch (err) {

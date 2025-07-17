@@ -40,7 +40,7 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-The server will run at http://localhost:8000
+The server will run at https://learnix-production.up.railway.app
 
 ## API Endpoints
 
