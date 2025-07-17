@@ -8,7 +8,7 @@ const TestCORS = () => {
     useEffect(() => {
         const testCORS = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/api/test-cors/', {
+                const response = await axios.get('https://learnix-production.up.railway.app/api/test-cors/', {
                     withCredentials: true,
                     headers: {
                         'Accept': 'application/json',
