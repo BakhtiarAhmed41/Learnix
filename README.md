@@ -2,7 +2,7 @@
 
 Learnix is a sophisticated study assistant that leverages advanced AI to generate high-quality educational assessments. The system uses comprehensive content analysis, intelligent question generation, and analytical grading to provide an exceptional learning experience.
 
-## 🧠 Advanced AI Capabilities
+## Advanced AI Capabilities
 
 ### Comprehensive Content Analysis
 - **Content Extraction & Prioritization**: Advanced algorithms extract core educational content while filtering out metadata, copyright information, and formatting artifacts
@@ -32,7 +32,7 @@ Learnix is a sophisticated study assistant that leverages advanced AI to generat
 - **Analytical Feedback**: Detailed, constructive feedback that helps students learn and improve
 - **Understanding-Focused**: Emphasizes comprehension over memorization
 
-## 🚀 Features
+## Features
 
 ### Multiple Choice Questions (MCQ)
 - **Intelligent Distractors**: Plausible options based on common misconceptions
@@ -54,7 +54,7 @@ Learnix is a sophisticated study assistant that leverages advanced AI to generat
 5. **Quality Validation**: Ensures questions meet educational standards
 6. **Grading & Feedback**: Provides comprehensive assessment and learning guidance
 
-## 🛠 Technical Architecture
+## Technical Architecture
 
 ### Backend (Django)
 - **Advanced AI Integration**: Google Gemini 1.5 Flash for sophisticated content analysis
@@ -69,7 +69,7 @@ Learnix is a sophisticated study assistant that leverages advanced AI to generat
 - **Accessibility**: WCAG compliant design for inclusive learning
 - **Performance**: Optimized for smooth user experience
 
-## 📊 Assessment Quality Standards
+## Assessment Quality Standards
 
 ### Question Quality Criteria
 - **Content Validity**: Questions directly related to provided content
@@ -86,7 +86,7 @@ Learnix is a sophisticated study assistant that leverages advanced AI to generat
 - **Clarity & Organization (15%)**: Well-articulated and logical presentation
 - **Critical Thinking (5%)**: Analytical thinking and problem-solving skills
 
-## 🎯 Educational Benefits
+## Educational Benefits
 
 ### For Students
 - **Deep Learning**: Questions that test understanding rather than memorization
@@ -102,7 +102,7 @@ Learnix is a sophisticated study assistant that leverages advanced AI to generat
 - **Flexibility**: Customizable difficulty and question types
 - **Analytics**: Detailed insights into student performance
 
-## 🔒 Quality Assurance
+## Quality Assurance
 
 ### Content Processing
 - **Metadata Filtering**: Complete removal of non-educational content
@@ -122,7 +122,7 @@ Learnix is a sophisticated study assistant that leverages advanced AI to generat
 - **Constructive Feedback**: Helpful guidance for improvement
 - **Understanding Focus**: Emphasizes comprehension over exact wording
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Python 3.8+
@@ -142,7 +142,7 @@ Learnix is a sophisticated study assistant that leverages advanced AI to generat
 - Configure database settings
 - Set up email settings for contact and feedback forms
 
-## 📈 Future Enhancements
+## Future Enhancements
 
 - **Adaptive Learning**: Personalized question difficulty based on performance
 - **Advanced Analytics**: Detailed learning analytics and progress tracking
@@ -150,9 +150,9 @@ Learnix is a sophisticated study assistant that leverages advanced AI to generat
 - **Integration APIs**: Connect with existing learning management systems
 - **Mobile Application**: Native mobile app for on-the-go learning
 
-## 🤝 Contributing
+## Contributing
 
-We welcome contributions to improve Learnix's capabilities and educational impact. Please read our contributing guidelines and code of conduct.
+I welcome contributions to improve Learnix's capabilities and educational impact. Please read our contributing guidelines and code of conduct.
 
 ---
 
