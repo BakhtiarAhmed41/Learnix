@@ -1,6 +1,6 @@
 # Learnix - Advanced AI-Powered Study Assistant
 
-Learnix is a sophisticated study assistant that leverages advanced AI to generate high-quality educational assessments. The system uses comprehensive content analysis, intelligent question generation, and analytical grading to provide an exceptional learning experience.
+Learnix is a study assistant that leverages advanced AI to generate high-quality educational assessments. The system uses comprehensive content analysis, intelligent question generation, and analytical grading to provide an exceptional learning experience.
 
 ## Advanced AI Capabilities
 
