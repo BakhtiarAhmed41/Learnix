@@ -88,7 +88,7 @@ class DocumentViewSet(viewsets.ModelViewSet):
         """
         # Configure Gemini for content analysis
         genai.configure(api_key=settings.GEMINI_API_KEY)
-        model = genai.GenerativeModel('gemini-1.5-flash-latest')
+        model = genai.GenerativeModel('gemini-1.5-flash')
         
         analysis_prompt = f"""
         You are an expert content analyst with deep expertise in educational content extraction and analysis. Your task is to extract ONLY the core educational content from the provided text.
