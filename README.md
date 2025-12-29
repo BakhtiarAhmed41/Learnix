@@ -22,7 +22,6 @@ Learnix is a study assistant that leverages advanced AI to generate high-quality
 - **Application Questions**: Tests ability to apply knowledge to new scenarios
 - **Comparison & Contrast**: Evaluates understanding of relationships between concepts
 - **Problem-Solving**: Tests critical thinking and analytical reasoning
-- **Synthesis & Evaluation**: Requires combining information and making judgments
 - **Mathematical Reasoning**: Numerical calculations, formula applications, and data interpretation
 
 ### Sophisticated Grading System
